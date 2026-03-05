@@ -1,0 +1,65 @@
+:root {
+  /* Brand Colors */
+  --color-cream: #F7F1DF;
+  --color-charcoal: #3C3C3C;
+  --color-red: #D30B39;
+  --color-gold: #D30B39;
+  --color-lace-pink: #FFE8ED;
+  --color-white: #FFFFFF;
+  --color-black: #1A1A1A;
+
+  /* Neutrals */
+  --color-grey-100: #F5F5F5;
+  --color-grey-200: #E8E8E8;
+  --color-grey-300: #D4D4D4;
+  --color-grey-500: #8A8A8A;
+  --color-grey-700: #4A4A4A;
+
+  /* Typography */
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter Tight', 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Font Sizes */
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
+  --text-5xl:  3rem;
+
+  /* Spacing */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* Border Radius */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md:   0 4px 16px rgba(0, 0, 0, 0.10);
+  --shadow-lg:   0 8px 32px rgba(0, 0, 0, 0.14);
+  --shadow-gold: 0 4px 24px rgba(211, 11, 57, 0.30);
+  --shadow-red:  0 4px 16px rgba(211, 11, 57, 0.28);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+}

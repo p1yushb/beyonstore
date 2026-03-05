@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Find a Store | Beyon Jewels</title>
+  <meta name="description" content="Locate your nearest Beyon Jewels boutique. Browse stores across India, check opening hours, and book an appointment." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       HERO  (40vh, per updated plan § 4)
+       ============================================================ -->
+  <section class="hero" aria-labelledby="heroTitle">
+    <div class="hero-content">
+      <p class="hero-eyebrow">Our Boutiques</p>
+      <h1 class="hero-title" id="heroTitle">Find Your Nearest<br>Beyon Store</h1>
+      <p class="hero-subtitle">Experience our collections in person</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SEARCH & FILTER
+       ============================================================ -->
+  <section class="search-section" aria-label="Search stores">
+    <div class="container">
+      <div class="filter-group">
+
+        <div class="search-bar" role="search">
+          <span class="search-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </span>
+          <input
+            type="search"
+            id="storeSearch"
+            name="storeSearch"
+            placeholder="Search by city or store name…"
+            autocomplete="off"
+            aria-label="Search stores"
+          />
+        </div>
+
+        <button class="location-btn" id="useMyLocation" type="button" aria-label="Find stores near me">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 0 1 10 10c0 5.52-10 12-10 12S2 17.52 2 12A10 10 0 0 1 12 2z"/></svg>
+          Use My Location
+        </button>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CITY PICKER
+       ============================================================ -->
+  <section class="city-section" aria-label="Filter by city">
+    <div class="container">
+      <div class="city-row" id="cityRow" role="group" aria-label="City filter"></div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       STORE LIST
+       ============================================================ -->
+  <main class="store-section" id="main-content">
+    <div class="container">
+
+      <div class="section-meta">
+        <h2 class="section-title">Our Stores</h2>
+        <p class="store-count" id="storeCount" aria-live="polite"></p>
+      </div>
+
+      <div class="store-grid" id="storeGrid" role="list" aria-label="Store listings"></div>
+
+    </div>
+  </main>
+
+  <!-- ============================================================
+       BOOKING MODAL  (onopenbooking / onsubmitappointment)
+       ============================================================ -->
+  <div
+    class="modal-overlay hidden"
+    id="bookingModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="bookingModalTitle"
+  >
+    <div class="modal">
+
+      <button class="modal-close" id="closeModal" aria-label="Close booking form">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+
+      <div class="modal-header">
+        <h2 id="bookingModalTitle">Book an Appointment</h2>
+        <p class="modal-store-name" id="bookingStoreName">at Beyon Jewels</p>
+      </div>
+
+      <form class="booking-form" id="bookingForm" novalidate>
+
+        <p class="form-section-label">Your Details</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bookingName">Full Name <span aria-hidden="true">*</span></label>
+            <input type="text" id="bookingName" name="name" placeholder="Your name" required autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label for="bookingPhone">Phone <span aria-hidden="true">*</span></label>
+            <input type="tel" id="bookingPhone" name="phone" placeholder="+91 00000 00000" required autocomplete="tel" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bookingEmail">Email <span aria-hidden="true">*</span></label>
+          <input type="email" id="bookingEmail" name="email" placeholder="your@email.com" required autocomplete="email" />
+        </div>
+
+        <hr class="form-divider" />
+        <p class="form-section-label">Store &amp; Time</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="bookingCity">City <span aria-hidden="true">*</span></label>
+            <select id="bookingCity" name="city" required>
+              <option value="" disabled selected>Select city</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Delhi">Delhi</option>
+              <option value="Bangalore">Bangalore</option>
+              <option value="Pune">Pune</option>
+              <option value="Chennai">Chennai</option>
+              <option value="Hyderabad">Hyderabad</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="bookingStore">Store <span aria-hidden="true">*</span></label>
+            <select id="bookingStore" name="store" required>
+              <option value="" disabled selected>Select store</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bookingDate">Preferred Date <span aria-hidden="true">*</span></label>
+          <input type="date" id="bookingDate" name="date" required />
+        </div>
+
+        <div class="form-group">
+          <label for="bookingNotes">Special Requests</label>
+          <textarea id="bookingNotes" name="notes" placeholder="Tell us about the occasion or any preferences…"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">Confirm Appointment</button>
+
+      </form>
+
+      <div id="bookingSuccess" style="display:none;">
+        <div class="booking-success">
+          <div class="success-icon-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <h3>Appointment Requested</h3>
+          <p>We've received your request and will confirm your appointment shortly via email or phone.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
