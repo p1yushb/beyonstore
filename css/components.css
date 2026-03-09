@@ -120,12 +120,53 @@
   color: var(--color-grey-500);
 }
 
+/* ---- Flip placeholder ---- */
+.search-flip-placeholder {
+  position: absolute;
+  left: 2.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-grey-500);
+  font-size: var(--text-base);
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.15s ease;
+}
+
+.search-flip-placeholder.hidden {
+  opacity: 0;
+}
+
+.flip-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.flip-word.flip-out {
+  animation: slide-out 0.22s ease forwards;
+}
+
+.flip-word.flip-in {
+  animation: slide-in 0.22s ease forwards;
+}
+
+@keyframes slide-out {
+  from { transform: translateY(0);     opacity: 1; }
+  to   { transform: translateY(-120%); opacity: 0; }
+}
+
+@keyframes slide-in {
+  from { transform: translateY(120%);  opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
 .location-btn {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-5);
-  background: var(--color-cream);
+  background: var(--color-white);
   border: 1.5px solid var(--color-gold);
   border-radius: var(--radius-full);
   font-family: var(--font-sans);
@@ -237,6 +278,16 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.card-image-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 .card-image-watermark {
@@ -680,6 +731,13 @@
   color: var(--color-grey-500);
 }
 
+.form-group input[readonly] {
+  background: var(--color-grey-100);
+  color: var(--color-grey-700);
+  cursor: default;
+  border-color: var(--color-grey-200);
+}
+
 .form-group textarea {
   resize: vertical;
   min-height: 90px;
@@ -764,6 +822,21 @@
   margin-top: var(--space-5);
 }
 
+.store-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.gallery-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: center;
+  border-radius: var(--radius-md);
+  display: block;
+}
+
 .detail-card-title {
   font-family: var(--font-sans);
   font-size: var(--text-xs);
@@ -778,7 +851,7 @@
 .detail-store-name {
   font-family: var(--font-serif);
   font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 700;
+  font-weight: 500;
   color: var(--color-charcoal);
   line-height: 1.2;
   margin-bottom: var(--space-4);
@@ -996,3 +1069,13 @@
 
 .text-gold { color: var(--color-gold); }
 .text-red  { color: var(--color-red);  }
+
+.stores-loading {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--space-16) var(--space-4);
+  color: var(--color-grey-500);
+  font-size: var(--text-sm);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}

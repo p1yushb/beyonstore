@@ -16,8 +16,8 @@
   --color-grey-700: #4A4A4A;
 
   /* Typography */
-  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
-  --font-sans: 'Inter Tight', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Geom', Georgia, serif;
+  --font-sans: 'Geom', system-ui, -apple-system, sans-serif;
 
   /* Font Sizes */
   --text-xs:   0.75rem;

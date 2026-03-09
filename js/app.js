@@ -87,15 +87,16 @@ let bookingStoreId = null;
    ============================================================ */
 function createStoreCard(store) {
   const { isOpen, todayHours } = getStoreStatus(store);
+  const reopensText = todayHours ? `Reopens at ${formatTime(todayHours.open)}` : 'Closed';
   const statusBadge = isOpen
-    ? `<span class="badge badge--open"><span class="badge-dot"></span>Open</span>`
-    : `<span class="badge badge--closed"><span class="badge-dot"></span>Closed</span>`;
+    ? `<span class="badge badge--open"><span class="badge-dot"></span>Open Now</span>`
+    : `<span class="badge badge--closed"><span class="badge-dot"></span>${reopensText}</span>`;
 
   const hoursText = todayHours
     ? `${formatTime(todayHours.open)} – ${formatTime(todayHours.close)}`
     : 'Hours unavailable';
 
-  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${store.coordinates.lat},${store.coordinates.lng}`;
+  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(store.name + ', ' + store.address)}`;
 
   const article = document.createElement('article');
   article.className = 'store-card';
@@ -104,7 +105,7 @@ function createStoreCard(store) {
 
   article.innerHTML = `
     <div class="card-image">
-      <div class="card-image-watermark">${ICONS.gem}</div>
+      <img src="Images/bottom-2.webp" alt="${store.name}" loading="lazy" class="card-image-photo" />
       <div class="card-image-badge">${statusBadge}</div>
     </div>
     <div class="card-content">
@@ -230,10 +231,10 @@ function openBookingModal(storeId) { // onopenbooking
     nameEl.textContent = `at ${store.name}`;
   }
 
-  // Pre-fill city & store selects
-  if (cityEl && store) {
-    cityEl.value = store.city;
-    populateStoreSelect(store.city, storeId);
+  // Auto-fill city & store as read-only text
+  if (store) {
+    if (cityEl)  cityEl.value  = store.city;
+    if (storeEl) storeEl.value = store.name;
   }
 
   modal.classList.remove('hidden');
@@ -254,14 +255,6 @@ function closeBookingModal() {
   bookingStoreId = null;
 }
 
-function populateStoreSelect(city, preselectedId) {
-  const storeEl = document.getElementById('bookingStore');
-  if (!storeEl) return;
-  const relevant = STORES.filter(s => s.city === city);
-  storeEl.innerHTML = relevant.map(s =>
-    `<option value="${s.store_id}" ${s.store_id === preselectedId ? 'selected' : ''}>${s.name}</option>`
-  ).join('');
-}
 
 /* ============================================================
    USE MY LOCATION  (onclickusemylocation)
@@ -333,13 +326,12 @@ function handleBookingSubmit(e) {
   const storeId  = document.getElementById('bookingStore')?.value;
   const store    = STORES.find(s => s.store_id === storeId);
 
-  // Basic validation
+  // Basic validation — name, phone, date are mandatory
   const name  = form.elements['name']?.value.trim();
   const phone = form.elements['phone']?.value.trim();
-  const email = form.elements['email']?.value.trim();
   const date  = form.elements['date']?.value;
 
-  if (!name || !phone || !email || !date) {
+  if (!name || !phone || !date) {
     alert('Please fill in all required fields.');
     return;
   }
@@ -347,7 +339,8 @@ function handleBookingSubmit(e) {
   // Simulate submission (replace with real API call)
   console.log('Appointment Request:', {
     store: store?.name,
-    name, phone, email, date,
+    city: form.elements['city']?.value,
+    name, phone, date,
     notes: form.elements['notes']?.value,
   });
 
@@ -364,9 +357,38 @@ function handleViewStoreDetails(storeId) {
 }
 
 /* ============================================================
+   LOADING / ERROR STATES
+   ============================================================ */
+function showLoading() {
+  const grid = document.getElementById('storeGrid');
+  if (grid) grid.innerHTML = `<div class="stores-loading">Loading stores…</div>`;
+}
+
+function showLoadError() {
+  const grid = document.getElementById('storeGrid');
+  if (grid) grid.innerHTML = `
+    <div class="no-results">
+      <div class="no-results-gem">${ICONS.gem}</div>
+      <p class="no-results-title">Could not load stores</p>
+      <p class="no-results-sub">Please try refreshing the page.</p>
+    </div>`;
+}
+
+/* ============================================================
    BOOT
    ============================================================ */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  /* Show loading while API fetches */
+  showLoading();
+
+  try {
+    await loadStores();
+  } catch (err) {
+    console.error('Failed to load stores:', err);
+    showLoadError();
+    return;
+  }
+
   /* City tiles */
   renderCityTiles();
 
@@ -421,13 +443,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const bookingForm = document.getElementById('bookingForm');
   if (bookingForm) bookingForm.addEventListener('submit', handleBookingSubmit);
 
-  /* City select in booking form — repopulate store select */
-  const bookingCitySelect = document.getElementById('bookingCity');
-  if (bookingCitySelect) {
-    bookingCitySelect.addEventListener('change', e => {
-      populateStoreSelect(e.target.value, null);
-    });
-  }
 
   /* Header booking CTAs on detail page */
   document.querySelectorAll('.js-open-booking-detail').forEach(btn => {

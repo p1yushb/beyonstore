@@ -255,7 +255,7 @@ img {
    STORE DETAIL PAGE — LAYOUT
    ============================================================ */
 .detail-page {
-  background: var(--color-cream);
+  background: var(--color-white);
 }
 
 .detail-action-bar {

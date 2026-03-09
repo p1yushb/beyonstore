@@ -9,7 +9,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Geom:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <!-- Styles -->
   <link rel="stylesheet" href="css/variables.css" />
@@ -35,14 +35,7 @@
     </div>
   </div>
 
-  <!-- ============================================================
-       STORE HERO IMAGE
-       ============================================================ -->
-  <div class="detail-hero" id="detailHero" aria-hidden="true">
-    <div class="detail-gem-watermark">
-      <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/><line x1="12" y1="2" x2="12" y2="22"/><polyline points="2 8.5 12 13 22 8.5"/></svg>
-    </div>
-  </div>
+
 
   <!-- ============================================================
        STORE DETAIL CONTENT
@@ -83,11 +76,13 @@
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       <div class="modal-header">
-        <h2 id="bookingModalTitle">Book an Appointment</h2>
+        <h2 id="bookingModalTitle">Book a Visit</h2>
         <p class="modal-store-name" id="bookingStoreName">at Beyon Jewels</p>
       </div>
       <form class="booking-form" id="bookingForm" novalidate>
+
         <p class="form-section-label">Your Details</p>
+
         <div class="form-row">
           <div class="form-group">
             <label for="bookingName">Full Name <span aria-hidden="true">*</span></label>
@@ -98,41 +93,33 @@
             <input type="tel" id="bookingPhone" name="phone" placeholder="+91 00000 00000" required autocomplete="tel" />
           </div>
         </div>
-        <div class="form-group">
-          <label for="bookingEmail">Email <span aria-hidden="true">*</span></label>
-          <input type="email" id="bookingEmail" name="email" placeholder="your@email.com" required autocomplete="email" />
-        </div>
+
         <hr class="form-divider" />
         <p class="form-section-label">Store &amp; Time</p>
+
         <div class="form-row">
           <div class="form-group">
-            <label for="bookingCity">City <span aria-hidden="true">*</span></label>
-            <select id="bookingCity" name="city" required>
-              <option value="" disabled selected>Select city</option>
-              <option value="Mumbai">Mumbai</option>
-              <option value="Delhi">Delhi</option>
-              <option value="Bangalore">Bangalore</option>
-              <option value="Pune">Pune</option>
-              <option value="Chennai">Chennai</option>
-              <option value="Hyderabad">Hyderabad</option>
-            </select>
+            <label for="bookingCity">City</label>
+            <input type="text" id="bookingCity" name="city" readonly />
           </div>
           <div class="form-group">
-            <label for="bookingStore">Store <span aria-hidden="true">*</span></label>
-            <select id="bookingStore" name="store" required>
-              <option value="" disabled selected>Select store</option>
-            </select>
+            <label for="bookingStore">Store</label>
+            <input type="text" id="bookingStore" name="store" readonly />
           </div>
         </div>
+
         <div class="form-group">
           <label for="bookingDate">Preferred Date <span aria-hidden="true">*</span></label>
           <input type="date" id="bookingDate" name="date" required />
         </div>
+
         <div class="form-group">
           <label for="bookingNotes">Special Requests</label>
           <textarea id="bookingNotes" name="notes" placeholder="Tell us about the occasion or any preferences…"></textarea>
         </div>
+
         <button type="submit" class="btn btn-primary btn-full">Confirm Appointment</button>
+
       </form>
       <div id="bookingSuccess" style="display:none;">
         <div class="booking-success">
@@ -155,10 +142,25 @@
      * Reads ?id= from URL, finds store in STORES, and renders the detail view.
      * Ref: execution_plan.md § 3B — Store Detail View
      */
-    (function () {
+    (async function () {
+      /* Show loading while API fetches */
+      document.getElementById('detailMain').innerHTML =
+        `<div class="stores-loading">Loading store details…</div>`;
+
+      try {
+        await loadStores();
+      } catch (err) {
+        document.getElementById('detailMain').innerHTML = `
+          <div style="text-align:center; padding: 4rem 0;">
+            <p style="font-family: var(--font-serif); font-size: 1.5rem; color: var(--color-charcoal); margin-bottom: 1rem;">Could not load store data</p>
+            <a href="index.html" style="color: var(--color-gold); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em;">← Back to all stores</a>
+          </div>`;
+        return;
+      }
+
       const params  = new URLSearchParams(window.location.search);
       const storeId = params.get('id');
-      const store   = (typeof STORES !== 'undefined') && STORES.find(s => s.store_id === storeId);
+      const store   = STORES.find(s => s.store_id === storeId);
 
       if (!store) {
         document.getElementById('detailMain').innerHTML = `
@@ -209,9 +211,11 @@
         `<span style="color:${i < fullStars ? 'var(--color-gold)' : 'var(--color-grey-300)'}">★</span>`
       ).join('');
 
-      /* Google Maps URL */
-      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${store.coordinates.lat},${store.coordinates.lng}`;
-      const dirUrl  = `https://www.google.com/maps/dir/?api=1&destination=${store.coordinates.lat},${store.coordinates.lng}`;
+      /* Google Maps URLs
+         mapsUrl → opens Google Maps searching by name + coordinates (surfaces the business listing)
+         dirUrl  → opens turn-by-turn directions to the store            */
+      const mapsUrl = `https://maps.google.com/?q=${encodeURIComponent(store.name)}&ll=${store.coordinates.lat},${store.coordinates.lng}&z=17`;
+      const dirUrl  = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(store.name + ', ' + store.address)}`;
 
       /* CTA Bar — Icon-only Call | Directions | Book a Visit (red) */
       document.getElementById('detailCtas').innerHTML = `
@@ -240,8 +244,35 @@
           </tr>`;
       }).join('');
 
-      /* Languages */
-      const langChips = store.attributes.languages.map(l => `<span class="lang-chip">${l}</span>`).join('');
+      /* Attributes — only render items that have real values */
+      const hasParking = store.attributes.parking === true;
+      const langs = (store.attributes.languages || []).filter(l => l && l.trim());
+      const hasLanguages = langs.length > 0;
+
+      const parkingItem = hasParking ? `
+        <div class="attribute-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg>
+          <span>Parking available</span>
+        </div>` : '';
+
+      const langChips = langs.map(l => `<span class="lang-chip">${l}</span>`).join('');
+      const languagesItem = hasLanguages ? `
+        <div class="attribute-item" style="flex-direction:column; align-items:flex-start; gap:8px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            <span>Languages spoken</span>
+          </div>
+          <div class="language-chips">${langChips}</div>
+        </div>` : '';
+
+      const attributesSection = (hasParking || hasLanguages) ? `
+        <div class="detail-card">
+          <p class="detail-card-title">Store Attributes</p>
+          <div class="attribute-list">
+            ${parkingItem}
+            ${languagesItem}
+          </div>
+        </div>` : '';
 
       /* Main Content */
       document.getElementById('detailMain').innerHTML = `
@@ -268,29 +299,30 @@
           </div>
         </div>
 
+        ${attributesSection}
+
         <div class="detail-card">
-          <p class="detail-card-title">Store Attributes</p>
-          <div class="attribute-list">
-            <div class="attribute-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg>
-              <span>${store.attributes.parking ? 'Parking available' : 'No dedicated parking'}</span>
-            </div>
-            <div class="attribute-item" style="flex-direction:column; align-items:flex-start; gap:8px;">
-              <div style="display:flex; align-items:center; gap:10px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                <span>Languages spoken</span>
-              </div>
-              <div class="language-chips">${langChips}</div>
-            </div>
+          <p class="detail-card-title">Store Gallery</p>
+          <div class="store-gallery">
+            <img src="Images/bottom-1.webp" alt="${store.name} — photo 1" loading="lazy" class="gallery-img" />
+            <img src="Images/bottom-2.webp" alt="${store.name} — photo 2" loading="lazy" class="gallery-img" />
+            <img src="Images/bottom-3.webp" alt="${store.name} — photo 3" loading="lazy" class="gallery-img" />
           </div>
         </div>
 
         <div class="detail-card">
           <p class="detail-card-title">Location</p>
-          <div class="map-placeholder">
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" class="map-pin-icon"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <p>${store.city}, India</p>
-            <a href="${dirUrl}" target="_blank" rel="noopener">Open in Google Maps</a>
+          <div class="map-embed-wrap">
+            <iframe
+              src="https://maps.google.com/maps?q=${store.coordinates.lat},${store.coordinates.lng}&z=17&output=embed"
+              width="100%"
+              height="280"
+              style="border:0; border-radius: var(--radius-lg); display:block;"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              title="Map of ${store.name}">
+            </iframe>
           </div>
         </div>
       `;
@@ -307,13 +339,28 @@
         <div class="detail-card" style="margin-top: var(--space-5);">
           <p class="detail-card-title">Book a Visit</p>
           <p style="font-size:var(--text-sm); color:var(--color-grey-500); margin-bottom:var(--space-5); line-height:1.6;">
-            Reserve a one-on-one consultation with our jewellery experts.
+            Drop by to play with jewellery<br>Or honestly, just come in for a cup of coffee!
           </p>
           <button class="btn btn-primary btn-full js-open-booking-detail" data-store-id="${store.store_id}" type="button">
-            Book Appointment
+            Book a Visit
           </button>
         </div>
       `;
+
+      /* Wire Book a Visit buttons now that they're in the DOM */
+      document.querySelectorAll('.js-open-booking-detail').forEach(btn => {
+        btn.addEventListener('click', () => openBookingModal(btn.dataset.storeId));
+      });
+
+      /* Close modal */
+      const closeBtn = document.getElementById('closeModal');
+      if (closeBtn) closeBtn.addEventListener('click', closeBookingModal);
+
+      const modal = document.getElementById('bookingModal');
+      if (modal) modal.addEventListener('click', e => { if (e.target === modal) closeBookingModal(); });
+
+      const bookingForm = document.getElementById('bookingForm');
+      if (bookingForm) bookingForm.addEventListener('submit', handleBookingSubmit);
 
     })();
   </script>
