@@ -111,6 +111,7 @@ async function loadStores() {
   all.forEach((loc, i) => {
     STORES.push({
       store_id:     `loc_${i + 1}`,
+      store_code:    loc.StoreCode || loc.BranchCode || loc.BranchId || '',
       name:          loc.StoreDisplayName || loc.BranchName || `Store ${i + 1}`,
       city:          extractCity(loc.StoreAddress),
       coordinates:  { lat: loc.Latitude, lng: loc.Longitude },

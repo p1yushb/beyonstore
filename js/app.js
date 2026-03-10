@@ -318,15 +318,14 @@ function haversineKm(lat1, lon1, lat2, lon2) {
 /* ============================================================
    APPOINTMENT SUBMIT  (onsubmitappointment)
    ============================================================ */
-function handleBookingSubmit(e) {
+async function handleBookingSubmit(e) {
   e.preventDefault();
-  const form     = e.target;
-  const formEl   = document.getElementById('bookingForm');
+  const form      = e.target;
+  const formEl    = document.getElementById('bookingForm');
   const successEl = document.getElementById('bookingSuccess');
-  const storeId  = document.getElementById('bookingStore')?.value;
-  const store    = STORES.find(s => s.store_id === storeId);
+  const store     = STORES.find(s => s.store_id === bookingStoreId);
 
-  // Basic validation — name, phone, date are mandatory
+  /* Validation */
   const name  = form.elements['name']?.value.trim();
   const phone = form.elements['phone']?.value.trim();
   const date  = form.elements['date']?.value;
@@ -336,17 +335,49 @@ function handleBookingSubmit(e) {
     return;
   }
 
-  // Simulate submission (replace with real API call)
-  console.log('Appointment Request:', {
-    store: store?.name,
-    city: form.elements['city']?.value,
-    name, phone, date,
-    notes: form.elements['notes']?.value,
-  });
+  /* Loading state */
+  const submitBtn  = form.querySelector('[type="submit"]');
+  const btnOriginal = submitBtn.textContent;
+  submitBtn.textContent = 'Booking…';
+  submitBtn.disabled = true;
 
-  // Show success state
-  if (formEl)    formEl.style.display = 'none';
-  if (successEl) successEl.style.display = '';
+  try {
+    const payload = {
+      servicecloudPartnerId: 'Ecomm',
+      customerName:    name,
+      mobileNumber:    phone,
+      appointmentDate: date,
+      storeCode:       store?.store_code || '',
+      storeName:       store?.name       || form.elements['store']?.value || '',
+      city:            store?.city       || form.elements['city']?.value  || '',
+      comments:        form.elements['notes']?.value || '',
+    };
+
+    const res = await fetch(
+      'https://preprd-ms-api.titan.in/titan-ecomm2-exp-app-ch2/api/exp/appointment/v1/bookAnAppointment',
+      {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': 'Basic VGl0YW5fTXVsZTphZG1pbl90IXRhbl9tdWxl',
+          'servicecloudPartnerId': 'Ecomm',
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+
+    /* Success */
+    if (formEl)    formEl.style.display    = 'none';
+    if (successEl) successEl.style.display = '';
+
+  } catch (err) {
+    console.error('Booking API error:', err);
+    submitBtn.textContent = btnOriginal;
+    submitBtn.disabled    = false;
+    alert('Something went wrong. Please try again or call the store directly.');
+  }
 }
 
 /* ============================================================
